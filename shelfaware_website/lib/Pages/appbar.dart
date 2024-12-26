@@ -32,9 +32,9 @@ class _AppBarPageState extends State<AppBarPage> {
   @override
   void initState() {
     super.initState();
-    // Initialize the list of pages with required parameters
+   
     pages = [
-      AnalyticsPage(), // New Dashboard page
+      AnalyticsPage(), 
       UserListPage (),
     ];
   }
@@ -42,7 +42,7 @@ class _AppBarPageState extends State<AppBarPage> {
   // Handle navigation based on index
   void _onNavigationTapped(int index) {
     setState(() {
-      currentPage = index; // Update the page based on the selected index
+      currentPage = index; 
     });
   }
 
