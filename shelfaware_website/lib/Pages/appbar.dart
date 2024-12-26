@@ -83,27 +83,10 @@ class _AppBarPageState extends State<AppBarPage> {
                   style: TextStyle(color: Colors.black, fontSize: 16),
                 ),
               ),
-              TextButton(
-                onPressed: () => _onNavigationTapped(2), // Shopping List
-                child: const Text(
-                  'Shopping List',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
-                ),
-              ),
-              TextButton(
-                onPressed: () => _onNavigationTapped(3), // Notifications
-                child: const Text(
-                  'Notifications',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
-                ),
-              ),
-              TextButton(
-                onPressed: () => _onNavigationTapped(4), // Menu
-                child: const Text(
-                  'Menu',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
-                ),
-              ),
+              
+              
+              
+             
               const Spacer(),
               ElevatedButton(
                 onPressed: () {
