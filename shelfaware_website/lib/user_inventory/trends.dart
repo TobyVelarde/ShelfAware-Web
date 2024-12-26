@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:shelfaware_website/user_inventory/consumption.dart';
+import 'package:shelfaware_website/user_inventory/prices_costs.dart';
+import 'package:shelfaware_website/user_inventory/restocking.dart';
 
 class TrendsAndAnalyticsWidget extends StatefulWidget {
   final String selectedCategory;
@@ -17,11 +19,17 @@ class TrendsAndAnalyticsWidget extends StatefulWidget {
 }
 
 class _TrendsAndAnalyticsWidgetState extends State<TrendsAndAnalyticsWidget> {
-  String selectedButton = 'Consumption';
+  int selectedIndex = 0;  // Using an index to track the selected category
+
+  final Map<int, String> categories = {
+    0: 'Consumption',
+    1: 'Restocking',
+    2: 'Prices and Total Cost',
+  };
 
   final Map<String, Map<String, List<int>>> data = {
     'Consumption': {
-      'Item 1': [50, 30],
+      'Item 1': [14, 30],
       'Item 2': [40, 20],
       'Item 3': [30, 25],
       'Item 4': [20, 15],
@@ -55,151 +63,55 @@ class _TrendsAndAnalyticsWidgetState extends State<TrendsAndAnalyticsWidget> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildButton('Consumption'),
-              _buildButton('Restocking'),
-              _buildButton('Prices'),
-              _buildButton('Total Cost'),
-            ],
+            children: categories.entries.map((entry) {
+              return _buildButton(entry.key, entry.value);
+            }).toList(),
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: _buildGraphs(),
+            child: _buildPage(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildButton(String label) {
+  Widget _buildButton(int index, String label) {
     return ElevatedButton(
       onPressed: () {
         setState(() {
-          selectedButton = label;
+          selectedIndex = index;
         });
       },
       child: Text(label),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
-        backgroundColor: selectedButton == label
+        backgroundColor: selectedIndex == index
             ? Colors.blueGrey[800]
             : Colors.grey[400],
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-      )
-    );
-  }
-
-  Widget _buildGraphs() {
-    if (selectedButton == 'Consumption' || selectedButton == 'Restocking') {
-      int maxQuantity = 0;
-      int maxFrequency = 0;
-      data[selectedButton]!.forEach((_, values) {
-        maxQuantity = max(maxQuantity, values[0]);
-        maxFrequency = max(maxFrequency, values[1]);
-      });
-
-      return SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text(
-                'Trends (${selectedButton})',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            ...data[selectedButton]!.entries.map(
-              (entry) => _buildHorizontalBar(
-                entry.key,
-                entry.value,
-                maxQuantity,
-                maxFrequency,
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Center(
-        child: Text(
-          'Select a category to view trends and analytics',
-          style: const TextStyle(fontSize: 18),
-        ),
-      );
-    }
-  }
-
-  Widget _buildHorizontalBar(
-    String itemName,
-    List<int> values,
-    int maxQuantity,
-    int maxFrequency,
-  ) {
-    double maxBarWidth = MediaQuery.of(context).size.width * 0.6;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            itemName,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black.withOpacity(0.7),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Container(
-                height: 20,
-                width: (values[0] / maxQuantity) * maxBarWidth,
-                decoration: BoxDecoration(
-                  color: Colors.blueGrey,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '${values[0]}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Container(
-                height: 20,
-                width: (values[1] / maxFrequency) * maxBarWidth,
-                decoration: BoxDecoration(
-                  color: Colors.teal,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '${values[1]}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
+  }
+
+  Widget _buildPage() {
+    switch (selectedIndex) {
+      case 0:
+        return ConsumptionPage(graphData: data['Consumption']!);
+      case 1:
+        return RestockingPage(graphData: data['Restocking']!);
+      case 2:
+        return PricesAndTotalCostPage();
+      default:
+        return const Center(
+          child: Text(
+            'Select a category to view trends and analytics',
+            style: TextStyle(fontSize: 18),
+          ),
+        );
+    }
   }
 }
